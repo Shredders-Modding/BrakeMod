@@ -36,5 +36,5 @@ using MelonLoader;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: MelonInfo(typeof(BrakeMod.ModManager), "BrakeMod", "1", "Pamplemousse")]
+[assembly: MelonInfo(typeof(BrakeMod.ModManager), "BrakeMod", "2", "Pamplemousse")]
 [assembly: MelonGame("Foampunch", "Shredders")]

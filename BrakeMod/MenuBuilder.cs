@@ -13,46 +13,85 @@ namespace BrakeMod
     {
         public MenuBuilder(IntPtr ptr) : base(ptr) { }
 
-        private GameObject parent;
-        private Slider slider;
-        private TMP_InputField inputFieldTMPro;
-        private Button resetButton;
+        private GameObject courseBrakeParent;
+        private Slider courseBrakeSlider;
+        private TMP_InputField courseBrakeInputField;
+        private Button courseBrakeResetButton;
+
+        private GameObject powderBrakeParent;
+        private Slider powderBrakeSlider;
+        private TMP_InputField powderBrakeInputField;
+        private Button powderBrakeResetButton;
 
         private void Start()
         {
-            parent = gameObject.transform.Find("Brake_Parent").gameObject;
-            slider = parent.transform.Find("Brake_Slider").GetComponent<Slider>();
-            inputFieldTMPro = parent.transform.Find("Brake_InputField").GetComponent<TMP_InputField>();
-            resetButton = parent.transform.Find("Brake_ResetButton").gameObject.GetComponent<Button>();
+            //COURSE
+            courseBrakeParent = gameObject.transform.Find("CourseBrake_Parent").gameObject;
+            courseBrakeSlider = courseBrakeParent.transform.Find("CourseBrake_Slider").GetComponent<Slider>();
+            courseBrakeInputField = courseBrakeParent.transform.Find("CourseBrake_InputField").GetComponent<TMP_InputField>();
+            courseBrakeResetButton = courseBrakeParent.transform.Find("CourseBrake_ResetButton").gameObject.GetComponent<Button>();
 
-            slider.value = ModManager.brakeValue;
-            inputFieldTMPro.text = ModManager.brakeValue.ToString("F2");
+            courseBrakeSlider.value = ModManager.courseBrakeValue;
+            courseBrakeInputField.text = ModManager.courseBrakeValue.ToString("F2");
 
-            slider.onValueChanged.AddListener(new Action<float>(OnBrakeChange));
-            inputFieldTMPro.onSubmit.AddListener(new Action<string>(OnBrakeSubmit));
-            resetButton.onClick.AddListener(new Action(OnBrakeReset));
+            courseBrakeSlider.onValueChanged.AddListener(new Action<float>(OnCourseBrakeChange));
+            courseBrakeInputField.onSubmit.AddListener(new Action<string>(OnCourseBrakeSubmit));
+            courseBrakeResetButton.onClick.AddListener(new Action(OnCourseBrakeReset));
+
+            //POWDER
+            powderBrakeParent = gameObject.transform.Find("PowderBrake_Parent").gameObject;
+            powderBrakeSlider = powderBrakeParent.transform.Find("PowderBrake_Slider").GetComponent<Slider>();
+            powderBrakeInputField = powderBrakeParent.transform.Find("PowderBrake_InputField").GetComponent<TMP_InputField>();
+            powderBrakeResetButton = powderBrakeParent.transform.Find("PowderBrake_ResetButton").gameObject.GetComponent<Button>();
+
+            powderBrakeSlider.value = ModManager.powderBrakeValue;
+            powderBrakeInputField.text = ModManager.powderBrakeValue.ToString("F2");
+
+            powderBrakeSlider.onValueChanged.AddListener(new Action<float>(OnPowderBrakeChange));
+            powderBrakeInputField.onSubmit.AddListener(new Action<string>(OnPowderBrakeSubmit));
+            powderBrakeResetButton.onClick.AddListener(new Action(OnPowderBrakeReset));
 
             ModLogger.Log("Menu builder initalized");
         }
 
-        private void OnBrakeReset()
+        private void OnCourseBrakeReset()
         {
-            slider.value = 0.15f;
-            inputFieldTMPro.text = "0.15";
+            courseBrakeSlider.value = ModManager.initCourseBrakeValue.y;
+            courseBrakeInputField.text = ModManager.initCourseBrakeValue.y.ToString();
             //Change board size here
-            ModManager.SetBrakeValue(0.15f);
+            ModManager.SetBrakeValue(ModManager.initCourseBrakeValue.y, ModManager.powderBrakeValue);
         }
 
-        private void OnBrakeSubmit(string text)
+        private void OnCourseBrakeSubmit(string text)
         {
-            slider.value = float.Parse(text);
-            ModManager.SetBrakeValue(slider.value);
+            courseBrakeSlider.value = float.Parse(text);
+            ModManager.SetBrakeValue(courseBrakeSlider.value, ModManager.powderBrakeValue);
         }
 
-        private void OnBrakeChange(float value)
+        private void OnCourseBrakeChange(float value)
         {
-            inputFieldTMPro.text = value.ToString("F2");
-            ModManager.SetBrakeValue(value);
+            courseBrakeInputField.text = value.ToString("F2");
+            ModManager.SetBrakeValue(value, ModManager.powderBrakeValue);
+        }
+
+        private void OnPowderBrakeReset()
+        {
+            powderBrakeSlider.value = ModManager.initPowderBrakeValue.y;
+            powderBrakeInputField.text = ModManager.initPowderBrakeValue.y.ToString();
+            //Change board size here
+            ModManager.SetBrakeValue(ModManager.courseBrakeValue, ModManager.initPowderBrakeValue.y);
+        }
+
+        private void OnPowderBrakeSubmit(string text)
+        {
+            powderBrakeSlider.value = float.Parse(text);
+            ModManager.SetBrakeValue(ModManager.courseBrakeValue, powderBrakeSlider.value);
+        }
+
+        private void OnPowderBrakeChange(float value)
+        {
+            powderBrakeInputField.text = value.ToString("F2");
+            ModManager.SetBrakeValue(ModManager.courseBrakeValue, value);
         }
     }
 }

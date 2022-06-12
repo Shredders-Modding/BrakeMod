@@ -19,10 +19,16 @@ namespace BrakeMod
         public static SnowboardConfig snowboardConfig;
         private AssetManager assetManager;
         private static PhysicsBrake physicsBrake;
-        public static float brakeValue;
+
+        public static Vector2 initCourseBrakeValue;
+        public static Vector2 initPowderBrakeValue;
+
+        public static float courseBrakeValue;
+        public static float powderBrakeValue;
 
         public static MelonPreferences_Category brakePrefCategory;
-        public static MelonPreferences_Entry<float> brakePref;
+        public static MelonPreferences_Entry<float> courseBrakePref;
+        public static MelonPreferences_Entry<float> powderBrakePref;
 
         public override void OnApplicationStart()
         {
@@ -35,8 +41,10 @@ namespace BrakeMod
             assetManager.Init();
 
             brakePrefCategory = MelonPreferences.CreateCategory("brakePrefCategory");
-            brakePref = brakePrefCategory.CreateEntry("brakePref", 0.15f);
-            brakeValue = brakePref.Value;
+            courseBrakePref = brakePrefCategory.CreateEntry("courseBrakePref", 1f);
+            powderBrakePref = brakePrefCategory.CreateEntry("powderBrakePref", 1f);
+            courseBrakeValue = courseBrakePref.Value;
+            powderBrakeValue = powderBrakePref.Value;
         }
 
         public override void OnLateUpdate()
@@ -48,7 +56,6 @@ namespace BrakeMod
                 else
                     assetManager.instantiatedMenu.SetActive(true);
             }
-
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
@@ -83,14 +90,20 @@ namespace BrakeMod
 
         public static void InitBrakeValue()
         {
-            physicsBrake.BoardBrakeMagnitude = brakeValue;
+            initCourseBrakeValue = physicsBrake.MinMaxBrake;
+            initPowderBrakeValue = physicsBrake.MinMaxDepthBrake;
+            ModLogger.Log($"initCourseBrakeValue = {initCourseBrakeValue.y} and initPowderBrakeValue = {initPowderBrakeValue.y}");
+            SetBrakeValue(courseBrakeValue, powderBrakeValue);
         }
 
-        public static void SetBrakeValue(float in_value)
+        public static void SetBrakeValue(float in_courseBrake, float in_powderBrake)
         {
-            brakeValue = in_value;
-            brakePref.Value = brakeValue;
-            physicsBrake.BoardBrakeMagnitude = brakeValue;
+            courseBrakeValue = in_courseBrake;
+            powderBrakeValue = in_powderBrake;
+            courseBrakePref.Value = courseBrakeValue;
+            powderBrakePref.Value = powderBrakeValue;
+            physicsBrake.MinMaxBrake = new Vector2(initCourseBrakeValue.x, courseBrakeValue);
+            physicsBrake.MinMaxDepthBrake = new Vector2(initPowderBrakeValue.x, powderBrakeValue - courseBrakeValue);
         }
     }
 }
