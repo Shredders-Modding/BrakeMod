@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
+using Il2CppLirp;
 
 namespace BrakeMod
 {
-    [HarmonyPatch(typeof(Lirp.SnowboardController), "Show")]
-    class SnowboardControllerPatcher
+    [HarmonyPatch(typeof(SnowboardController), "Show")]
+    internal class SnowboardControllerPatcher
     {
         [HarmonyPostfix]
-        public static void Postfix(System.Reflection.MethodBase __originalMethod, Lirp.SnowboardController __instance)
+        public static void Postfix(System.Reflection.MethodBase __originalMethod, SnowboardController __instance)
         {
             try
             {
                 if (__instance == ModManager.userSession.sc && !ModManager.gameplayRider)
                 {
                     ModManager.gameplayRider = __instance.gameObject;
-                    ModManager.snowboardConfig = ModManager.gameplayRider.GetComponent<Lirp.SnowboardConfig>();
+                    ModManager.snowboardConfig = ModManager.gameplayRider.GetComponent<SnowboardConfig>();
                     ModManager.GetPhysicsBrake();
                 }
             }

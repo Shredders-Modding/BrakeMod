@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Lirp;
+using Il2CppInterop.Runtime.Injection;
+using Il2CppLirp;
 using MelonLoader;
-using UnhollowerRuntimeLib;
 using UnityEngine;
 
 namespace BrakeMod
@@ -27,10 +27,10 @@ namespace BrakeMod
         public static float powderBrakeValue;
 
         public static MelonPreferences_Category brakePrefCategory;
-        public static MelonPreferences_Entry<float> courseBrakePref;
-        public static MelonPreferences_Entry<float> powderBrakePref;
+        public static MelonPreferences_Entry<string> courseBrakePref;
+        public static MelonPreferences_Entry<string> powderBrakePref;
 
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
             ClassInjector.RegisterTypeInIl2Cpp<MenuBuilder>();
 
@@ -41,10 +41,10 @@ namespace BrakeMod
             assetManager.Init();
 
             brakePrefCategory = MelonPreferences.CreateCategory("brakePrefCategory");
-            courseBrakePref = brakePrefCategory.CreateEntry("courseBrakePref", 1f);
-            powderBrakePref = brakePrefCategory.CreateEntry("powderBrakePref", 1f);
-            courseBrakeValue = courseBrakePref.Value;
-            powderBrakeValue = powderBrakePref.Value;
+            courseBrakePref = brakePrefCategory.CreateEntry("courseBrakePref", 1f.ToString("F2"));
+            powderBrakePref = brakePrefCategory.CreateEntry("powderBrakePref", 1f.ToString("F2"));
+            courseBrakeValue = float.Parse(courseBrakePref.Value);
+            powderBrakeValue = float.Parse(powderBrakePref.Value);
         }
 
         public override void OnLateUpdate()
@@ -100,8 +100,8 @@ namespace BrakeMod
         {
             courseBrakeValue = in_courseBrake;
             powderBrakeValue = in_powderBrake;
-            courseBrakePref.Value = courseBrakeValue;
-            powderBrakePref.Value = powderBrakeValue;
+            courseBrakePref.Value = courseBrakeValue.ToString("F2");
+            powderBrakePref.Value = powderBrakeValue.ToString("F2");
             physicsBrake.MinMaxBrake = new Vector2(initCourseBrakeValue.x, courseBrakeValue);
             physicsBrake.MinMaxDepthBrake = new Vector2(initPowderBrakeValue.x, powderBrakeValue - courseBrakeValue);
         }
